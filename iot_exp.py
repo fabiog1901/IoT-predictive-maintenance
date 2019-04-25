@@ -15,7 +15,7 @@ spark = SparkSession.builder \
       .appName("Predictive Maintenance") \
       .getOrCreate()
 
-# read 21 colunms large file from HDFS
+# read machine state historical data from HDFS
 schemaData = StructType([StructField("0", DoubleType(), True),
                          StructField("1", DoubleType(), True),
                          StructField("2", DoubleType(), True),
@@ -67,8 +67,8 @@ features = ["4_indexed",
             "18",
             "19"]
 
-param_numTrees = 25 # int(sys.argv[1])
-param_maxDepth = 20 # int(sys.argv[2])
+param_numTrees = int(sys.argv[1])
+param_maxDepth = int(sys.argv[2])
 param_impurity = 'gini'
 
 randF=RandomForestClassifier(n_jobs=10,
@@ -101,9 +101,9 @@ print(auroc, ap)
 cdsw.track_metric("auroc", auroc)
 cdsw.track_metric("ap", ap)
 
-pickle.dump(randF, open("sklearn_rf.pkl","wb"))
+pickle.dump(randF, open("iot_model.pkl","wb"))
 
-cdsw.track_file("sklearn_rf.pkl")
+cdsw.track_file("iot_model.pkl")
 
-time.sleep(20)
-print("Slept for 20 seconds.")
+time.sleep(15)
+print("Slept for 15 seconds.")
