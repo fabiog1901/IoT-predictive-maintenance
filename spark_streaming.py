@@ -1,148 +1,3 @@
-"state", "account_length", "area_code", "phone_number", "intl_plan", "voice_mail_plan", "number_vmail_messages", "total_day_minutes", "total_day_calls", "total_day_charge", "total_eve_minutes", "total_eve_calls", "total_eve_charge", "total_night_minutes", "total_night_calls", "total_night_charge", "total_intl_minutes", "total_intl_calls", "total_intl_charge", "number_customer_service_calls"
-
-
-
-
-### CSV example
-
-KS
- 128
- 415
- 382-4657
- no
- yes
- 25
- 265.1
- 110
- 45.07
- 197.4
- 99
- 16.78
- 244.7
- 91
- 11.01
- 10
- 3
- 2.7
- 1
- False.
-
-
-########## NIFI generateflowfile
-
-{
-"sensor_id": ${random():mod(10):plus(1)},
-"sensor_ts": ${random():mod(999):plus(1)},
-"sensor_1": ${random():mod(999):plus(1)},
-"sensor_3": ${random():mod(999):plus(1)},
-"sensor_4": ${random():mod(999):plus(1)},
-"sensor_5": ${random():mod(999):plus(1)},
-"sensor_6": ${random():mod(999):plus(1)},
-"sensor_7": ${random():mod(999):plus(1)},
-"sensor_8": ${random():mod(999):plus(1)},
-"sensor_9": ${random():mod(999):plus(1)},
-"sensor_10": ${random():mod(999):plus(1)},
-"sensor_11": ${random():mod(999):plus(1)},
-"sensor_12": ${random():mod(999):plus(1)},
-"sensor_13": ${random():mod(999):plus(1)},
-"sensor_14": ${random():mod(999):plus(1)},
-"sensor_15": ${random():mod(999):plus(1)},
-"sensor_16": ${random():mod(999):plus(1)},
-"sensor_17": ${random():mod(999):plus(1)},
-"sensor_18": ${random():mod(999):plus(1)},
-"sensor_19": ${random():mod(999):plus(1)}
-}
-
-### KUDU table
-
-CREATE TABLE sensors
-(
- sensor_id INT,
- sensor_ts INT, 
- sensor_1 DOUBLE,
- sensor_3 DOUBLE,
- sensor_4 DOUBLE,
- sensor_5 DOUBLE,
- sensor_6 DOUBLE,
- sensor_7 DOUBLE,
- sensor_8 DOUBLE,
- sensor_9 DOUBLE,
- sensor_10 DOUBLE,
- sensor_11 DOUBLE,
- sensor_12 DOUBLE,
- sensor_13 DOUBLE,
- sensor_14 DOUBLE,
- sensor_15 DOUBLE,
- sensor_16 DOUBLE,
- sensor_17 DOUBLE,
- sensor_18 DOUBLE,
- sensor_19 DOUBLE,
- is_failing INT,
- PRIMARY KEY (sensor_ID, sensor_ts)
-)
-PARTITION BY HASH PARTITIONS 16
-STORED AS KUDU
-TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
-
-
-
-### NIFI avro schema
-
-{
-  "name": "recordFormatName",
-  "namespace": "nifi.examples",
-  "type": "record",
-  "fields": [
-    { "name": "sensor_id", "type": "double" },
-    { "name": "sensor_ts", "type": "double" },
-    { "name": "sensor_1", "type": "double" },
-    { "name": "sensor_3", "type": "double" },
-    { "name": "sensor_4", "type": "double" },
-    { "name": "sensor_5", "type": "double" },
-    { "name": "sensor_6", "type": "double" },
-    { "name": "sensor_7", "type": "double" },
-    { "name": "sensor_8", "type": "double" },
-    { "name": "sensor_9", "type": "double" },
-    { "name": "sensor_10", "type": "double" },
-    { "name": "sensor_11", "type": "double" },
-    { "name": "sensor_12", "type": "double" },
-    { "name": "sensor_13", "type": "double" },
-    { "name": "sensor_14", "type": "double" },
-    { "name": "sensor_15", "type": "double" },
-    { "name": "sensor_16", "type": "double" },
-    { "name": "sensor_17", "type": "double" },
-    { "name": "sensor_17", "type": "double" },
-    { "name": "sensor_19", "type": "double" },
-  ]
-}
-
-
-
-
-
-###############   CDSW MODEL
-
-# pass to CDSW model 12
-predict({   "feature": "0, 95, 0, 88, 26.62, 75, 21.05, 115, 8.65, 5, 3.32, 3"})
-{'result': 0.0}
-predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
-{'result': 1.0}
-
-
-
-
-
-                           
-
-
-
-
-
-
-
-
-
-
 import json, configparser, sys, requests
 from pyspark import SparkContext
 from pyspark import SparkConf
@@ -153,9 +8,9 @@ from pyspark.sql import SQLContext
 from uuid import uuid1
 from pyspark.sql.types import *
 
-zk_broker = "ip-10-0-0-76.ec2.internal:2181"
+zk_broker = "localhost:2181"
 kafka_topic = "iot"
-kudu_master = "ip-10-0-0-76.ec2.internal"
+kudu_master = "localhost"
 kudu_table = "impala::default.sensors"
 
 # define the table schema
@@ -179,7 +34,7 @@ schema = StructType([StructField("sensor_id", IntegerType(), True),
                      StructField("sensor_17", DoubleType(), True),
                      StructField("sensor_18", DoubleType(), True),
                      StructField("sensor_19", DoubleType(), True),
-                     StructField("is_failing", IntegerType(), True)])
+                     StructField("is_healthy", IntegerType(), True)])
 
 #Lazy SqlContext evaluation
 def getSqlContextInstance(sparkContext):
@@ -193,14 +48,10 @@ def getPrediction(p):
               p['sensor_8'], p['sensor_9'], p['sensor_11'], p['sensor_12'],p['sensor_14'],p['sensor_15'],
               p['sensor_17'], p['sensor_18'], p['sensor_19'])
 
-    r = requests.post('http://cdsw.34.205.75.238.nip.io/api/altus-ds-1/models/call-model',
-                       data='{"accessKey":"mo57pyal0h0efnzl81digo1op3ydxnkd", \
+    return = requests.post('http://YourCDSWdomain/api/altus-ds-1/models/call-model',
+                       data='{"accessKey":"YourAccessKey", \
                              "request":{"feature":"' + feature + '"}}',
-                              headers={'Content-Type': 'application/json'})
-    print(feature)
-    print(r.json())
-    return r.json()['response']['result']
-
+                              headers={'Content-Type': 'application/json'}).json()['response']['result']
 
 
 #Insert data into Kudu
@@ -216,7 +67,7 @@ def insert_into_kudu(time,rdd):
 
 if __name__ == "__main__":
     sc = SparkContext(appName="SparkStreamingIntoKudu")
-    ssc = StreamingContext(sc, 10) # 2 second window
+    ssc = StreamingContext(sc, 10) # 10 second window
     kvs = KafkaUtils.createStream(ssc, zk_broker, "iot_ss", {kafka_topic:1})
 
     # parse the kafka message into a tuple
