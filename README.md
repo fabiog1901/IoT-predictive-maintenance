@@ -31,6 +31,32 @@ Open the Workbench and start a Python3 Session, then run the following command t
 </details>
 
 
+### NiFi generateFlowFile
+
+```
+{
+"sensor_id": ${random():mod(10):plus(1)},
+"sensor_ts": ${random():mod(999):plus(1)},
+"sensor_1": ${random():mod(999):plus(1)},
+"sensor_3": ${random():mod(999):plus(1)},
+"sensor_4": ${random():mod(999):plus(1)},
+"sensor_5": ${random():mod(999):plus(1)},
+"sensor_6": ${random():mod(999):plus(1)},
+"sensor_7": ${random():mod(999):plus(1)},
+"sensor_8": ${random():mod(999):plus(1)},
+"sensor_9": ${random():mod(999):plus(1)},
+"sensor_10": ${random():mod(999):plus(1)},
+"sensor_11": ${random():mod(999):plus(1)},
+"sensor_12": ${random():mod(999):plus(1)},
+"sensor_13": ${random():mod(999):plus(1)},
+"sensor_14": ${random():mod(999):plus(1)},
+"sensor_15": ${random():mod(999):plus(1)},
+"sensor_16": ${random():mod(999):plus(1)},
+"sensor_17": ${random():mod(999):plus(1)},
+"sensor_18": ${random():mod(999):plus(1)},
+"sensor_19": ${random():mod(999):plus(1)}
+}
+```
 
 ### Run SparkStreaming Job
 
