@@ -49,9 +49,8 @@ def getPrediction(p):
               p['sensor_17'], p['sensor_18'], p['sensor_19'])
 
     return = requests.post('http://YourCDSWDomain/api/altus-ds-1/models/call-model',
-                       data='{"accessKey":"YourAccessKey", \
-                             "request":{"feature":"' + feature + '"}}',
-                              headers={'Content-Type': 'application/json'}).json()['response']['result']
+                       data='{"accessKey":"YourAccessKey", "request":{"feature":"' + feature + '"}}',
+                       headers={'Content-Type': 'application/json'}).json()['response']['result']
 
 
 #Insert data into Kudu
