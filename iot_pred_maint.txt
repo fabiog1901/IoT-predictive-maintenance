@@ -32,7 +32,7 @@ KS
 
 {
 "sensor_id": ${random():mod(10):plus(1)},
-"sensor_ts": ${now():toNumber()},
+"sensor_ts": ${random():mod(999):plus(1)},
 "sensor_1": ${random():mod(999):plus(1)},
 "sensor_3": ${random():mod(999):plus(1)},
 "sensor_4": ${random():mod(999):plus(1)},
@@ -58,7 +58,7 @@ KS
 CREATE TABLE sensors
 (
  sensor_id INT,
- sensor_ts TIMESTAMP, 
+ sensor_ts INT, 
  sensor_1 DOUBLE,
  sensor_3 DOUBLE,
  sensor_4 DOUBLE,
@@ -77,6 +77,7 @@ CREATE TABLE sensors
  sensor_17 DOUBLE,
  sensor_18 DOUBLE,
  sensor_19 DOUBLE,
+ is_failing INT,
  PRIMARY KEY (sensor_ID, sensor_ts)
 )
 PARTITION BY HASH PARTITIONS 16
@@ -85,6 +86,7 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 
 
 
+### NIFI avro schema
 
 {
   "name": "recordFormatName",
@@ -141,8 +143,7 @@ predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
 
 
 
-
-import json, ConfigParser, sys
+import json, configparser, sys, requests
 from pyspark import SparkContext
 from pyspark import SparkConf
 from pyspark.streaming import StreamingContext
@@ -152,14 +153,14 @@ from pyspark.sql import SQLContext
 from uuid import uuid1
 from pyspark.sql.types import *
 
-zk_broker = "ip-10-0-0-196.ec2.internal:2181"
+zk_broker = "ip-10-0-0-76.ec2.internal:2181"
 kafka_topic = "iot"
-kudu_master = "ip-10-0-0-196.ec2.internal"
+kudu_master = "ip-10-0-0-76.ec2.internal"
 kudu_table = "impala::default.sensors"
 
 # define the table schema
-schema = StructType([StructField("sensor_id", DoubleType(), True),
-                     StructField("sensor_ts", DoubleType(), True),
+schema = StructType([StructField("sensor_id", IntegerType(), True),
+                     StructField("sensor_ts", IntegerType(), True),
                      StructField("sensor_1", DoubleType(), True),
                      StructField("sensor_3", DoubleType(), True),
                      StructField("sensor_4", DoubleType(), True),
@@ -177,7 +178,8 @@ schema = StructType([StructField("sensor_id", DoubleType(), True),
                      StructField("sensor_16", DoubleType(), True),
                      StructField("sensor_17", DoubleType(), True),
                      StructField("sensor_18", DoubleType(), True),
-                     StructField("sensor_19", DoubleType(), True)])
+                     StructField("sensor_19", DoubleType(), True),
+                     StructField("is_failing", IntegerType(), True)])
 
 #Lazy SqlContext evaluation
 def getSqlContextInstance(sparkContext):
@@ -186,6 +188,18 @@ def getSqlContextInstance(sparkContext):
     return globals()['sqlContextSingletonInstance']
 
 
+def getPrediction(p):
+    feature = "%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s" % (p['sensor_4'], p['sensor_1'], p['sensor_6'],
+              p['sensor_8'], p['sensor_9'], p['sensor_11'], p['sensor_12'],p['sensor_14'],p['sensor_15'],
+              p['sensor_17'], p['sensor_18'], p['sensor_19'])
+
+    r = requests.post('http://cdsw.34.205.75.238.nip.io/api/altus-ds-1/models/call-model',
+                       data='{"accessKey":"mo57pyal0h0efnzl81digo1op3ydxnkd", \
+                             "request":{"feature":"' + feature + '"}}',
+                              headers={'Content-Type': 'application/json'})
+    print(feature)
+    print(r.json())
+    return r.json()['response']['result']
 
 
 
@@ -202,14 +216,14 @@ def insert_into_kudu(time,rdd):
 
 if __name__ == "__main__":
     sc = SparkContext(appName="SparkStreamingIntoKudu")
-    ssc = StreamingContext(sc, 2) # 2 second window
+    ssc = StreamingContext(sc, 10) # 2 second window
     kvs = KafkaUtils.createStream(ssc, zk_broker, "iot_ss", {kafka_topic:1})
 
     # parse the kafka message into a tuple
     kafka_stream = kvs.map(lambda x: x[1]) \
                            .map(lambda l: json.loads(l)) \
-                           .map(lambda p: (float(p['sensor_id']),
-                                           float(p['sensor_ts']),
+                           .map(lambda p: (int(p['sensor_id']),
+                                           int(p['sensor_ts']),
                                            float(p['sensor_1']),
                                            float(p['sensor_3']),
                                            float(p['sensor_4']),
@@ -227,7 +241,8 @@ if __name__ == "__main__":
                                            float(p['sensor_16']),
                                            float(p['sensor_17']),
                                            float(p['sensor_18']),
-                                           float(p['sensor_19'])))
+                                           float(p['sensor_19']),
+                                           getPrediction(p)))
 
 
     #For each RDD in the DStream, insert it into Kudu table
@@ -235,3 +250,4 @@ if __name__ == "__main__":
 
     ssc.start()
     ssc.awaitTermination()
+
