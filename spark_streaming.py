@@ -8,9 +8,9 @@ from pyspark.sql import SQLContext
 from uuid import uuid1
 from pyspark.sql.types import *
 
-zk_broker = "localhost:2181"
+zk_broker = "YourHostname:2181"
 kafka_topic = "iot"
-kudu_master = "localhost"
+kudu_master = "YourHostname"
 kudu_table = "impala::default.sensors"
 
 # define the table schema
@@ -48,7 +48,7 @@ def getPrediction(p):
               p['sensor_8'], p['sensor_9'], p['sensor_11'], p['sensor_12'],p['sensor_14'],p['sensor_15'],
               p['sensor_17'], p['sensor_18'], p['sensor_19'])
 
-    return = requests.post('http://YourCDSWdomain/api/altus-ds-1/models/call-model',
+    return = requests.post('http://YourCDSWDomain/api/altus-ds-1/models/call-model',
                        data='{"accessKey":"YourAccessKey", \
                              "request":{"feature":"' + feature + '"}}',
                               headers={'Content-Type': 'application/json'}).json()['response']['result']
