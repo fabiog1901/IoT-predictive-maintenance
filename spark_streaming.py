@@ -65,7 +65,7 @@ def insert_into_kudu(time,rdd):
                  .save()
 
 if __name__ == "__main__":
-    sc = SparkContext(appName="SparkStreamingIntoKudu")
+    sc = SparkContext(appName="SparkStreaming_IoT")
     ssc = StreamingContext(sc, 10) # 10 second window
     kvs = KafkaUtils.createStream(ssc, zk_broker, "iot_ss", {kafka_topic:1})
 
