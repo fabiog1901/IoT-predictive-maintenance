@@ -47,3 +47,35 @@ $ mv ~/mock-data-generator/sparkstreamingkudu.py ~
 $ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 sparkstreamingkudu.py
 ```
 
+### Kudu table
+
+```
+CREATE TABLE sensors
+(
+ sensor_id INT,
+ sensor_ts INT, 
+ sensor_1 DOUBLE,
+ sensor_3 DOUBLE,
+ sensor_4 DOUBLE,
+ sensor_5 DOUBLE,
+ sensor_6 DOUBLE,
+ sensor_7 DOUBLE,
+ sensor_8 DOUBLE,
+ sensor_9 DOUBLE,
+ sensor_10 DOUBLE,
+ sensor_11 DOUBLE,
+ sensor_12 DOUBLE,
+ sensor_13 DOUBLE,
+ sensor_14 DOUBLE,
+ sensor_15 DOUBLE,
+ sensor_16 DOUBLE,
+ sensor_17 DOUBLE,
+ sensor_18 DOUBLE,
+ sensor_19 DOUBLE,
+ is_healthy INT,
+ PRIMARY KEY (sensor_ID, sensor_ts)
+)
+PARTITION BY HASH PARTITIONS 16
+STORED AS KUDU
+TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
+```
