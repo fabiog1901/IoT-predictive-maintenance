@@ -32,7 +32,7 @@ schemaData = StructType([StructField("0", DoubleType(), True),
 
 iot_data = spark.read.schema(schemaData).csv('/user/' 
                                              + os.environ['HADOOP_USER_NAME'] 
-                                             + '/iot2.txt')
+                                             + '/historical_iot.txt')
 
 
 # Create Pipeline
@@ -59,8 +59,8 @@ features = ["1_indexed",
             "10",
             "11"]
 
-param_numTrees = 25 # int(sys.argv[1])
-param_maxDepth = 20 # int(sys.argv[2])
+param_numTrees = int(sys.argv[1])
+param_maxDepth = int(sys.argv[2])
 param_impurity = 'gini'
 
 randF=RandomForestClassifier(n_jobs=10,
@@ -93,9 +93,9 @@ print(auroc, ap)
 cdsw.track_metric("auroc", auroc)
 cdsw.track_metric("ap", ap)
 
-pickle.dump(randF, open("sklearn.pkl","wb"))
+pickle.dump(randF, open("iot_model.pkl","wb"))
 
-cdsw.track_file("sklearn_rf.pkl")
+cdsw.track_file("iot_model.pkl")
 
-#gggggtime.sleep(20)
-#print("Slept for 20 seconds.")
+time.sleep(15)
+print("Slept for 15 seconds.")
