@@ -42,7 +42,7 @@ def getPrediction(p):
               p['sensor_3'], p['sensor_4'], p['sensor_5'], p['sensor_6'],p['sensor_7'],p['sensor_8'],
               p['sensor_9'], p['sensor_10'], p['sensor_11'])
 
-    return requests.post('http://cdsw.YourPublicIP.nip.io/api/altus-ds-1/models/call-model',
+    return requests.post('http://YourCDSWDomain/api/altus-ds-1/models/call-model',
                        data='{"accessKey":"YourAccessKey", "request":{"feature":"' + feature + '"}}',
                        headers={'Content-Type': 'application/json'}).json()['response']['result']
 
