@@ -39,7 +39,7 @@ and metadata, each experiment is executed in an isolated container.
 Start a workbench with a Python 3, at the prompt run:
 
 ```
-!hdfs dfs -put data/iot.txt /user/$HADOOP_USER_NAME
+!hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
 
 ### STEP 2 Examine `dsfortelco_sklearn_exp.py`
