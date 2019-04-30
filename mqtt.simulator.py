@@ -7,7 +7,7 @@ import random
 
 import paho.mqtt.client as mqtt
 
-def generate(host, port, username, password, topic, sensors, interval_ms, verbose):
+def generate(host, port, username, password, topic, machines, interval_ms, verbose):
     """generate data and send it to an MQTT broker"""
     mqttc = mqtt.Client()
 
@@ -20,29 +20,30 @@ def generate(host, port, username, password, topic, sensors, interval_ms, verbos
     interval_secs = interval_ms / 1000.0
 
     while True:
-        sensor_id = random.choice(keys)
-        sensor = sensors[sensor_id]
-        min_val, max_val = sensor.get("range", [0, 100])
-        val = random.randint(min_val, max_val)
+        for m in range(1,3):
+            sensor_id = m
+            sensor_ts = now()
+            min_val, max_val = sensor.get("range", [0, 100])
+            val = random.randint(min_val, max_val)
 
-        data = {
-            "id": sensor_id,
-            "value": val
-        }
+            data = {
+                "sensor_id": m,
+                "sensor_ts": time.time()*1000000()
+            }
 
-        for key in ["lat", "lng", "unit", "type", "description"]:
-            value = sensor.get(key)
+            for key in range(0, 11):
+                min_val, max_val = sensor.get("sensor_" + key)
 
-            if value is not None:
-                data[key] = value
+                if value is not None:
+                    data["sensor_" + key] = random.randint(min_val, max_val)
 
-        payload = json.dumps(data)
+            payload = json.dumps(data)
 
-        if verbose:
-            print("%s: %s" % (topic, payload))
+            if verbose:
+                print("%s: %s" % (topic, payload))
 
-        mqttc.publish(topic, payload)
-        time.sleep(interval_secs)
+            mqttc.publish(topic, payload)
+            time.sleep(interval_secs)
 
 
 def main(config_path):
@@ -52,13 +53,13 @@ def main(config_path):
             config = json.load(handle)
             mqtt_config = config.get("mqtt", {})
             misc_config = config.get("misc", {})
-            sensors = config.get("sensors")
+            machines = config.get("machines")
 
             interval_ms = misc_config.get("interval_ms", 500)
             verbose = misc_config.get("verbose", False)
 
-            if not sensors:
-                print("no sensors specified in config, nothing to do")
+            if not machines:
+                print("no machines specified in config, nothing to do")
                 return
 
             host = mqtt_config.get("host", "localhost")
@@ -67,7 +68,7 @@ def main(config_path):
             password = mqtt_config.get("password")
             topic = mqtt_config.get("topic", "mqttgen")
 
-            generate(host, port, username, password, topic, sensors, interval_ms, verbose)
+            generate(host, port, username, password, topic, machines, interval_ms, verbose)
     except IOError as error:
         print("Error opening config file '%s'" % config_path, error)
 
