@@ -16,26 +16,18 @@ def generate(host, port, username, password, topic, machines, interval_ms, verbo
 
     mqttc.connect(host, port)
 
-    keys = list(sensors.keys())
     interval_secs = interval_ms / 1000.0
 
     while True:
         for m in range(1,3):
-            sensor_id = m
-            sensor_ts = now()
-            min_val, max_val = sensor.get("range", [0, 100])
-            val = random.randint(min_val, max_val)
-
             data = {
                 "sensor_id": m,
-                "sensor_ts": time.time()*1000000()
+                "sensor_ts": long(time.time()*1000000)
             }
 
             for key in range(0, 11):
-                min_val, max_val = sensor.get("sensor_" + key)
-
-                if value is not None:
-                    data["sensor_" + key] = random.randint(min_val, max_val)
+                min_val, max_val = machines.get("sensor_" + str(key))
+                data["sensor_" + str(key)] = random.randint(min_val, max_val)
 
             payload = json.dumps(data)
 
@@ -57,10 +49,7 @@ def main(config_path):
 
             interval_ms = misc_config.get("interval_ms", 500)
             verbose = misc_config.get("verbose", False)
-
-            if not machines:
-                print("no machines specified in config, nothing to do")
-                return
+            print(type(machines))
 
             host = mqtt_config.get("host", "localhost")
             port = mqtt_config.get("port", 1883)
