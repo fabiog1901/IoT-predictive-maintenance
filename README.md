@@ -17,11 +17,12 @@ Labs summary:
 1. Create a CDH+CDSW cluster as per instructions [here](https://github.com/fabiog1901/OneNodeCDHCluster).
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
 3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the services are:
-  - Cloudera Manager: \<public-hostname\>:7180
-  - NiFi: \<public-hostname\>:8080/nifi/
-  - NiFi Registry: \<public-hostname\>:18080/nifireg/
-  - Hue: \<public-hostname\>:8888
-  - CDSW: cdsw.\<public-IP>.nip.io 
+  - Cloudera Manager: http://public-hostname:7180
+  - Cloudera Edge Management: http://public-hostname:10080/efm/ui
+  - NiFi: http://public-hostname:8080/nifi/
+  - NiFi Registry: http://public-hostname:18080/nifireg/
+  - Hue: http://public-hostname:8888
+  - CDSW: http://cdsw.PUBLIC-IP.nip.io   
 
 Login into Hue. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
