@@ -237,69 +237,36 @@ You might want to check the logs to confirm all is good:
 $ cat logs/minifi-app.log
 ```
 
-
-
-
 ## Lab 5 - Configuring Cloudera Edge Manager
 
 Cloudera Edge Manager gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the NiFi Registry integration.
 
+In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
 
+ConsumeMQTT settings:
 
-## Lab 6 - 
-
-
-## Lab 7 - 
-
-
-## Lab 8 - 
+Broker URI: tcp://10.0.0.19:1883
+Client ID: minifi-iot
+Topic Filter: iot/sensors/#
+Max Queue Size = 60
 
 
+RPG settings:
 
-### NiFi 
+URL = http://ec2-18-207-184-2.compute-1.amazonaws.com:8080/nifi
+TRANSPORT PROTOCOL = RAW
 
-```
-### NIFI avro schema
-{
-  "name": "recordFormatName",
-  "namespace": "nifi.examples",
-  "type": "record",
-  "fields": [
-    { "name": "sensor_id", "type": "double" },
-    { "name": "sensor_ts", "type": "double" },
-    { "name": "sensor_0", "type": "double" },
-    { "name": "sensor_1", "type": "double" },
-    { "name": "sensor_2", "type": "double" },
-    { "name": "sensor_3", "type": "double" },
-    { "name": "sensor_4", "type": "double" },
-    { "name": "sensor_5", "type": "double" },
-    { "name": "sensor_6", "type": "double" },
-    { "name": "sensor_7", "type": "double" },
-    { "name": "sensor_8", "type": "double" },
-    { "name": "sensor_9", "type": "double" },
-    { "name": "sensor_10", "type": "double" },
-    { "name": "sensor_11", "type": "double" }
-  ]
-}
-```
 
-### Run SparkStreaming Job
+## Lab 6 - Configuring the NiFi flow and push to Kafka
 
-```
-$ ACCESS_KEY=<put here your cdsw model access key>
-$ PUBLIC_IP=`dig +short myip.opendns.com @resolver1.opendns.com`
-$ mv ~/IoT-predictive-maintenance/spark_streaming.py ~
-$ sed -i "s/YourHostname/`hostname -f`/" spark_streaming.py
-$ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark_streaming.py
-$ sed -i "s/YourAccessKey/$ACCESS_KEY/" spark_streaming.py
-$ wget  http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.9.0/kudu-spark2_2.11-1.9.0.jar
-$ wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master/lib/spark-core_2.11-1.5.2.logging.jar
-$ rm -rf ~/.m2 ~/.ivy2/
-$ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark_streaming.py
-```
+In this lab, you will create a NiFi flow to receive the data from all gateways and push it to Kafka.
 
-### Kudu table
+## Lab 7 - Use Spark to call the model endpoint and save to Kudu 
+
+Spark Streaming is a processing framework for (near) real-time data. In this lab, you will use Spark to consume Kafka messages which contains the IoT data from the machine, and call the CDSW model endpoint APIs to predict whether, with those IoT values the machine sent, the machine is likely to break. Then save the results to Kudu for fast analytics.
+
+First, create the Kudu table. Login into Hue, and in the Impala Query, run this statement:
 
 ```
 CREATE TABLE sensors
@@ -325,6 +292,36 @@ PARTITION BY HASH PARTITIONS 16
 STORED AS KUDU
 TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 ```
+
+Now you can configure and run the Spark Streaming job. You need here the CDSW Access Key you saved before.
+
+```
+$ cd ~
+$ ACCESS_KEY=<put here your cdsw model access key>
+$ PUBLIC_IP=`curl https://api.ipify.org/`
+$ mv ~/IoT-predictive-maintenance/spark_streaming.py ~
+$ sed -i "s/YourHostname/`hostname -f`/" spark.iot.py
+$ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark.iot.py
+$ sed -i "s/YourAccessKey/$ACCESS_KEY/" spark.iot.py
+$ wget  http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.9.0/kudu-spark2_2.11-1.9.0.jar
+$ wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master/lib/spark-core_2.11-1.5.2.logging.jar
+$ rm -rf ~/.m2 ~/.ivy2/
+$ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
+```
+
+## Lab 8 - Fast analytics on fast data with Kudu and Impala
+
+In this lab, you will run some SQL queries using the Impala engine. You can run a report to inform you which machines are likely to break in the near future.
+
+Login into Hue, and run the following statement in the Impala Query
+
+```
+select sensor_id, sensor_ts from sensors where is_healthy = '0';
+
+```
+
+Run it a few times to confirm the latest inserts are always picked up by Impala. This allows you to build real-time reports for fast action.
+
 
 
 ## Appendix
