@@ -139,14 +139,14 @@ There is a predict definition which is the function that calls the model, using 
 From the projects page of your project, select the **Models** button. Select **New Model** and populate specify the following configuration:
 
 ```
-Name:	        "IoT Prediction Model"
-Description:	"IoT Prediction Model"
-File:		    cdsw.iot_model.py
-Function:	    predict	
-Example Input:  {"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"}
-Kernel:		    Python 3
-Engine:	        2 vCPU / 4 GB Memory
-Replicas:	    1
+Name:	         "IoT Prediction Model"
+Description:	 "IoT Prediction Model"
+File:		       cdsw.iot_model.py
+Function:	     predict	
+Example Input: {"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"}
+Kernel:		     Python 3
+Engine:	       2 vCPU / 4 GB Memory
+Replicas:	     1
 ```
 
 If all parameters are set, you can hit the **Deploy Model** button. Wait till the model is deployed. This will take several minutes.
@@ -164,7 +164,59 @@ Now, lets change the input parameters and call the predict function again. Put t
 }
 ```
 
-With these input parameters, the model returns 0, which mean that the machine is likely to break.
+With these input parameters, the model returns 0, which mean that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 6.
+
+
+## Lab 3 - Gateway host: setup machine sensors simulator and MQTT broker
+
+In this lab you will run a simple Python script that simulates IoT sensor data from some hypotetical machines, and send the data to a MQTT broker, [mosquitto](https://mosquitto.org/). The gateway host is connnected to many and different type of sensors, but they generally all share the same trasport protocol, mqtt.
+
+SSH into the VM, then  install required libs and start the mosquitto broker
+```
+$ yum install -y mosquitto
+$ pip install paho-mqtt
+$ systemctl enable mosquitto
+$ systemctl start mosquitto
+```
+
+Now clone this repo into the VM where the Python script is located and run the simulator
+
+```
+$ cd ~
+$ git clone https://github.com/fabiog1901/IoT-predictive-maintenance.git
+$ mv IoT-predictive-maintenance/mqtt.* ~
+$ python mqtt.iot_simulator.py mqtt.iot.config
+```
+
+You should see an output similar to the below:
+
+```
+TODO
+```
+
+You can stop the simulator now, with Ctrl+C.
+
+
+## Lab 4 - Gateway host: install and run MiNiFi
+
+$ tar xzvf minifi-0.6.0.1.0.0.0-54-bin.tar.gz
+$ cd minifi-0.6.0.1.0.0.0-54
+
+# download the NiFi Processor to read from mosquitto 
+$ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P ./lib
+
+
+## Lab 5 - 
+
+
+## Lab 6 - 
+
+
+## Lab 7 - 
+
+
+## Lab 8 - 
+
 
 
 ### NiFi 
