@@ -4,11 +4,8 @@
 
 Labs summary:
 
-*PART ONE: DATA SCIENTIST*
 1. Using **CDSW**'s **Experiment** feature, train your model on the historical data.
 2. Using the **Model** feature, deploy the model into production.
-
-*PART TWO: DEVOPS*
 3. On the Gateway host, run a simulator to send JSON data to a **MQTT** broker.
 4. On the Gateway host, install and run **MiNiFi** to read from the MQTT broker, filter and forward to the **NiFi** cluster.
 5. On the NiFi cluster, prepare and send to the **Kafka** cluster.
@@ -243,5 +240,5 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 ## Appendix
 <details>
   <summary>Resources</summary>
-  - [Cloudera Documentation](https://www.cloudera.com/documentation.html)
+  [Cloudera Documentation](https://www.cloudera.com/documentation.html)
 </details>
