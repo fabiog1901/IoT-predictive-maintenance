@@ -1,11 +1,58 @@
-# IoT Predictive Maintenance DRAFT
+# IoT Predictive Maintenance Workshop
 
-## Initial setup
+## Intro
 
-Open the Workbench and start a Python3 Session, then run the following command to install some required libraries:
+Labs summary:
+
+*PART ONE: DATA SCIENTIST*
+1. Using **CDSW**'s **Experiment** feature, train your model on the historical data.
+2. Using the **Model** feature, deploy the model into production.
+
+*PART TWO: DEVOPS*
+3. On the Gateway host, run a simulator to send JSON data to a **MQTT** broker.
+4. On the Gateway host, install and run **MiNiFi** to read from the MQTT broker, filter and forward to the **NiFi** cluster.
+5. On the NiFi cluster, prepare and send to the **Kafka** cluster.
+6. On the CDH cluster, read from the Kafka topic using **Spark Streaming**, call the **Model endpoint** and save results to **Kudu**.
+7. Using **Impala** and **Hue**, pull reports on upcoming predicted machine failures.
+
+## Lab 0 - Initial setup
+
+1. Create a CDH+CDSW cluster as per instructions [here](https://github.com/fabiog1901/OneNodeCDHCluster).
+2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
+3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the services are:
+  - Cloudera Manager: \<public-hostname\>:7180
+  - NiFi: \<public-hostname\>:8080/nifi/
+  - NiFi Registry: \<public-hostname\>:18080/nifireg/
+  - Hue: \<public-hostname\>:8888
+  - CDSW: cdsw.\<public-IP>.nip.io 
+
+Login into Hue. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
+
+Ensure you remember the username and password, as you will use these throughout this workshop.
+
+
+## Lab 1 - Train the model
+
+Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges.
+
+Navigate to the CDSW **Admin** page to fine tune the environment:
+- in the **Security** tab, add an _Engine_ with 2 vCPUs and 4 GB RAM, while deleting the default engine.
+- add the following _Environment Variable_: 
+   ```
+   HADOOP_CONF_DIR = /etc/hadoop/conf/
+   ```
+Save, then return to the main page to Create a New Project from Git, using this GitHub project as the source.
+
+Now that your project has been created, open the Workbench and start a Python3 Session, then run the following command to install some required libraries:
 ```
 !pip3 install --upgrade pip scikit-learn
 ```
+
+The project comes with a sample historical data. copy this dataset into HDFS
+
+You're now ready to run the Experiment to train the model on your historical data
+
+## Lab 2 - Deploy the model
 
 # A collapsible section with markdown
 <details>
@@ -16,18 +63,6 @@ Open the Workbench and start a Python3 Session, then run the following command t
   2. list
      * With some
      * Sub bullets
-</details>
-
-# A collapsible section with code
-<details>
-  <summary>Click to expand!</summary>
-  
-  ```javascript
-    function whatIsLove() {
-      console.log('Baby Don't hurt me. Don't hurt me');
-      return 'No more';
-    }
-  ```
 </details>
 
 
