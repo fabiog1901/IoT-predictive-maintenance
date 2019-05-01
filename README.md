@@ -240,5 +240,6 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 ## Appendix
 <details>
   <summary>Resources</summary>
+  
   [Cloudera Documentation](https://www.cloudera.com/documentation.html)
 </details>
