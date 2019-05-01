@@ -28,7 +28,7 @@ Login into Hue. As you are the first user to login into Hue, you are granted adm
 Ensure you remember the username and password, as you will use these throughout this workshop.
 
 
-## Lab 1 - Train the model
+## Lab 1 - CDSW: Train the model
 
 **STEP 0** : Configure CDSW
 
@@ -126,7 +126,7 @@ When all runs have completed successfully, check which parameters had the best q
 Select the run number with the best predictive value. In the Overview screen of the experiment, you can see that the model in spark format, is captured in the file `iot_model.pkl`. Select this file and hit the **Add to Project** button. This will copy the model to your project directory.
 
 
-## Lab 2 - Deploy the model
+## Lab 2 - CDSW: Deploy the model
 
 **STEP 1** : Examine the program cdsw.iot_model.py
 
@@ -197,16 +197,54 @@ TODO
 You can stop the simulator now, with Ctrl+C.
 
 
-## Lab 4 - Gateway host: install and run MiNiFi
+## Lab 4 - Gateway host: configure and run MiNiFi
 
-$ tar xzvf minifi-0.6.0.1.0.0.0-54-bin.tar.gz
-$ cd minifi-0.6.0.1.0.0.0-54
+MiNiFi is installed in the gateway host to read from the mosquitto broker and forward to the NiFi cluster. In this lab you will configure and run MiNiFi, but it's only in the next lab that you will provide the flow to execute.
 
-# download the NiFi Processor to read from mosquitto 
+Download the NiFi Processor to read from mosquitto 
+
+```
+$ cd minifi
 $ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P ./lib
+$ chown root:root lib/nifi-mqtt-nar-1.8.0.nar
+$ chmod 660 lib/nifi-mqtt-nar-1.8.0.nar
+```
+
+Edit file `conf/bootstrap.conf` with your env details:
+
+```
+nifi.c2.enable=true
+nifi.c2.rest.url=http://YourHostname:10080/efm/api/c2-protocol/heartbeat
+nifi.c2.rest.url.ack=http://YourHostname:10080/efm/api/c2-protocol/acknowledge
+nifi.c2.agent.heartbeat.period=10000
+nifi.c2.agent.class=iot1
+nifi.c2.agent.identifier=agent1
+```
+
+Alternatively, you can run these commands:
+```
+TODO sed commands
+sed -i "s/YourHostname/`hostname -f`/g" conf/bootstrap.conf
+```
+
+Once configured, you can start the MiNiFi agent
+```
+$ bin/minifi.sh start
+```
+
+You might want to check the logs to confirm all is good:
+```
+$ cat logs/minifi-app.log
+```
 
 
-## Lab 5 - 
+
+
+## Lab 5 - Configuring Cloudera Edge Manager
+
+Cloudera Edge Manager gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the NiFi Registry integration.
+
+
 
 
 ## Lab 6 - 
@@ -295,3 +333,17 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
   
   [Cloudera Documentation](https://www.cloudera.com/documentation.html)
 </details>
+
+## Troubleshooting
+
+### CEM doesn't pick up new NARs
+http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/api/agent-classes
+[{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot2","agentManifests":["agent-manifest-id"]},{"name":"iot3","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
+
+http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/api/agent-manifests?class=iot4
+[{"identifier":"agent-manifest-id","agentType":"minifi-java","version":"1","buildInfo":{"timestamp":1556628651811,"compiler":"JDK 8"},"bundles":[{"group":"default","artifact":"system","version":"unversioned","componentManifest":{"controllerServices":[],"processors":
+
+
+http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/swagger/ 
+"DELETE - Delete the agent manifest specified by id "
+click that button, and in the id field, enter `agent-manifest-id`
