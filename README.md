@@ -256,7 +256,7 @@ $ cat /opt/cloudera/cem/minifi/logs/minifi-app.log
 
 Cloudera Edge Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
-Open the EFM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heardbeat messages in the **Events Monitor**.
+Open the EFM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heartbeat messages in the **Events Monitor**.
 
 ![](./images/image14.png)
 
@@ -311,7 +311,7 @@ At this point, you can test the edge flow up until NiFi. Start the simulator aga
 $ python mqtt.iot_simulator.py mqtt.iot.config
 ```
 
-![](./images/image26.png)
+![](./images/image29.png)
 
 
 ## Lab 6 - Configuring the NiFi flow and push to Kafka
