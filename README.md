@@ -35,6 +35,8 @@ Below a screenshot with 6 tabs, one for each service:
 
 ## Lab 1 - CDSW: Train the model
 
+In this and the following lab, you will wear the had of a Data Scientist. You will write the model code, train it several times and finally deploy the model to Production. All within 30 minutes!
+
 **STEP 0** : Configure CDSW
 
 Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges.
@@ -105,6 +107,8 @@ Go back to the **Projects** page in CDSW, and hit the **Experiments** button.
 
 If the Status indicates ‘Running’, you have to wait till the run is completed. In case the status is ‘Build Failed’ or ‘Failed’, check the log information. This is accessible by clicking on the run number of your experiments. There you can find the session log, as well as the build information.
 
+IMAGE
+
 In case your status indicates ‘Success’, you should be able to see the auroc (Area Under the Curve) model quality indicator. It might be that this value is hidden by the CDSW user interface. In that case, click on the ‘3 metrics’ links, and select the auroc field. It might be needed to de-select some other fields, since the interface can only show 3 metrics at the same time.
 
 In this example, ~0.8478. Not bad, but maybe there are better hyper parameter values available.
@@ -174,18 +178,17 @@ With these input parameters, the model returns 0, which mean that the machine is
 
 In this lab you will run a simple Python script that simulates IoT sensor data from some hypotetical machines, and send the data to a MQTT broker, [mosquitto](https://mosquitto.org/). The gateway host is connnected to many and different type of sensors, but they generally all share the same trasport protocol, mqtt.
 
-SSH into the VM, then  install required libs and start the mosquitto broker
+SSH into the VM, then install required libs and start the mosquitto broker
 ```
+$ sudo su -
 $ yum install -y mosquitto
 $ pip install paho-mqtt
 $ systemctl enable mosquitto
 $ systemctl start mosquitto
 ```
 
-Now clone this repo, then run the simulator
-
+Now clone this repo, then run the simulator to send sensor data to mosquitto.
 ```
-$ cd ~
 $ git clone https://github.com/fabiog1901/IoT-predictive-maintenance.git
 $ mv IoT-predictive-maintenance/mqtt.* ~
 $ python mqtt.iot_simulator.py mqtt.iot.config
@@ -215,7 +218,7 @@ $ chmod 660 /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
 ```
 Once configured, you can start the MiNiFi agent
 ```
-$ systemctl minifi start
+$ systemctl start minifi
 ```
 You might want to check the logs to confirm all is good:
 ```
@@ -226,40 +229,71 @@ $ cat /opt/cloudera/cem/minifi/logs/minifi-app.log
 
 Cloudera Edge Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
-Open the CEM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heardbeat messages in the Events Monitor. You can then select the Flow Designer tab and build the flow. To build a dataflow, select the desired class from the table and click OPEN. Alternatively, you can double-click on the desired class. 
+Open the CEM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heardbeat messages in the **Events Monitor**.
+
+
+You can then select the **Flow Designer** tab and build the flow. To build a dataflow, select the desired class from the table and click OPEN. Alternatively, you can double-click on the desired class. 
 
 Add a _ConsumeMQTT_ Processor to the canvas and configure it with below settings:
 ```
-Broker URI: tcp://<hostname>:1883
+Broker URI: tcp://localhost:1883
 Client ID: minifi-iot
 Topic Filter: iot/#
 Max Queue Size = 60
 ```
+
 Add a _Remote Process Group_ to the canvas and configure it as follows:
 ```
 URL = http://hostname:8080/nifi
-TRANSPORT PROTOCOL = RAW
 ```
 
-At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an _Input Port_ to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it.
+At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an _Input Port_ to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it. For later testing you can temporarely add a _LogAttribute_ processor, and setup 2 connections:
+- from the Input Port to LogAttribute;
+- from LogAttribute to itself.
+
+Start the InputPort, but keep the LogAttribute in a stopped state.
+
+IMAGE
 
 Back to the Edge Management Web UI, connect the ConsumeMQTT to the RPG. The connection requires an ID and you can paste here the ID you just copied.
+
+The Flow is now complete, but before publishing it, create the Bucket in the NiFi Registry so that all versions of your flows are stored for review and audit. Open the NiFi Registry at http://public-hostname:18080/nifi-registry and create a bucket called "IoT".
+
+All required steps are now complete and you can now publish the flow for the minifi agent to pick it up automatically.
+
+IMAGE
+
+If successful, you will see the Flow details in the NiFi Registry.
+
+IMAGE
+
+At this point, you can test the edge flow up until NiFi. Start the simulator again and confirm you can see the messages queued"
+
+```
+$ python mqtt.iot_simulator.py mqtt.iot.config
+```
+
+
+IMAGE
 
 
 ## Lab 6 - Configuring the NiFi flow and push to Kafka
 
 In this lab, you will create a NiFi flow to receive the data from all gateways and push it to **Kafka**. 
 
-Add a _PublishKafka_2.0_ processor and configure it as follows:
+Open the NiFi web UI and add a _PublishKafka_2.0_ processor and configure it as follows:
 
 ```
-Broker: <hostname>:9002
-Topic: iot
-Use Transaction: False
+Kafka Brokers: <hostname>:9092
+Topic Name: iot
+Use Transactions: False
 ```
 
-Connect the Input Port to the PublishKafka processor. You can add more processors as needed to split, duplicate or re-rout your FlowFiles.
+Connect the Input Port to the PublishKafka processor by dragging the destination of the current connection from the LogAttribute to the PublishKafka. As with the LogAttribute, create a connection from the PublishKafka to itself.
 
+IMAGE
+
+You can add more processors as needed to split, duplicate or re-rout your FlowFiles.
 
 ## Lab 7 - Use Spark to call the model endpoint and save to Kudu 
 
