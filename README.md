@@ -224,27 +224,38 @@ Cloudera Edge Management gives you a visual overview of all MiNiFi agents in you
 
 Open the CEM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heardbeat messages in the Events Monitor. You can then select the Flow Designer tab and build the flow. To build a dataflow, select the desired class from the table and click OPEN. Alternatively, you can double-click on the desired class. 
 
-Add a Processor to the canvas and choose the ConsumeMQTT, and configure it with below settings:
-ConsumeMQTT settings:
+Add a _ConsumeMQTT_ Processor to the canvas and configure it with below settings:
 ```
 Broker URI: tcp://<hostname>:1883
 Client ID: minifi-iot
 Topic Filter: iot/#
 Max Queue Size = 60
-``
-Add a Remote Process Group to the canvas and configure it as follows:
+```
+Add a _Remote Process Group_ to the canvas and configure it as follows:
 ```
 URL = http://hostname:8080/nifi
 TRANSPORT PROTOCOL = RAW
 ```
 
-At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an Input Port to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it.
+At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an _Input Port_ to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it.
 
 Back to the Edge Management Web UI, connect the ConsumeMQTT to the RPG. The connection requires an ID and you can paste here the ID you just copied.
 
+
 ## Lab 6 - Configuring the NiFi flow and push to Kafka
 
-In this lab, you will create a NiFi flow to receive the data from all gateways and push it to Kafka.
+In this lab, you will create a NiFi flow to receive the data from all gateways and push it to **Kafka**. 
+
+Add a _PublishKafka_2.0_ processor and configure it as follows:
+
+```
+Broker: <hostname>:9002
+Topic: iot
+Use Transaction: False
+```
+
+Connect the Input Port to the PublishKafka processor. You can add more processors as needed to split, duplicate or re-rout your FlowFiles.
+
 
 ## Lab 7 - Use Spark to call the model endpoint and save to Kudu 
 
@@ -277,13 +288,13 @@ STORED AS KUDU
 TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 ```
 
-Now you can configure and run the Spark Streaming job. You need here the CDSW Access Key you saved before.
+Now you can configure and run the Spark Streaming job. You need here the CDSW Access Key you saved in Lab 2.
 
 ```
 $ cd ~
 $ ACCESS_KEY=<put here your cdsw model access key>
 $ PUBLIC_IP=`curl https://api.ipify.org/`
-$ mv ~/IoT-predictive-maintenance/spark_streaming.py ~
+$ mv ~/IoT-predictive-maintenance/spark.iot.py ~
 $ sed -i "s/YourHostname/`hostname -f`/" spark.iot.py
 $ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark.iot.py
 $ sed -i "s/YourAccessKey/$ACCESS_KEY/" spark.iot.py
@@ -292,6 +303,9 @@ $ wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master
 $ rm -rf ~/.m2 ~/.ivy2/
 $ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
 ```
+
+Spark Streaming will flood your screen with log messages, however, at a 10 seconds intervals, you should be able to spot a table: these are the messages that were consumed from Kafka and processed by Spark. YOu can configure Spark for a smaller time window, however, for this exercise 10 seconds is sufficient.
+
 
 ## Lab 8 - Fast analytics on fast data with Kudu and Impala
 
