@@ -60,7 +60,7 @@ def insert_into_kudu(time,rdd):
 
 if __name__ == "__main__":
     sc = SparkContext(appName="SparkStreaming_IoT")
-    ssc = StreamingContext(sc, 10) # 10 second window
+    ssc = StreamingContext(sc, 5) # 5 second window
     kvs = KafkaUtils.createStream(ssc, zk_broker, "iot", {kafka_topic:1})
 
     # parse the kafka message into a tuple
