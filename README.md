@@ -9,7 +9,7 @@ Labs summary:
 3. On the Gateway host, run a simulator to send IoT sensors data to the MQTT broker.
 4. On the Gateway host, run **MiNiFi** to read from the MQTT broker, filter and forward to the **NiFi** cluster.
 5. On the NiFi cluster, prepare and send to the **Kafka** cluster.
-6. On the CDH cluster, process each record using **Spark Streaming** by calling the **Model endpoint** and save results to **Kudu**.
+6. On the CDH cluster, process each record using **Spark Streaming**, calling the **Model endpoint** and save results to **Kudu**.
 7. On the CDH cluster, pull reports on upcoming predicted machine failures using **Impala** and **Hue**.
 
 ## Lab 0 - Initial setup
@@ -18,7 +18,7 @@ Labs summary:
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
 3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the other services are:
   - Cloudera Manager: http://public-hostname:7180
-  - Cloudera Edge Management: http://public-hostname:10080/efm/ui
+  - Cloudera Edge Flow Management: http://public-hostname:10080/efm/ui
   - NiFi: http://public-hostname:8080/nifi/
   - NiFi Registry: http://public-hostname:18080/nifi-registry
   - Hue: http://public-hostname:8888
@@ -28,13 +28,13 @@ Login into **Hue**. As you are the first user to login into Hue, you are granted
 
 Ensure you remember the username and password, as you will use these throughout this workshop.
 
-Below a screenshot with 6 tabs, one for each service:
+Below a screenshot of Chrome open with 6 tabs, one for each service.
 
 ![](./images/image10.png)
 
 ## Lab 1 - CDSW: Train the model
 
-In this and the following lab, you will wear the had of a Data Scientist. You will write the model code, train it several times and finally deploy the model to Production. All within 30 minutes!
+In this and the following lab, you will wear the hat of a Data Scientist. You will write the model code, train it several times and finally deploy the model to Production. All within 30 minutes!
 
 **STEP 0** : Configure CDSW
 
@@ -165,7 +165,7 @@ predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
 
 The functions returns successfully, so we know we can now deploy the model. You can now stop the engine.
 
-**STEP 2 **: Deploy the model
+**STEP 2** : Deploy the model
 
 From the projects page of your project, select the **Models** button. Select **New Model** and populate specify the following configuration:
 
@@ -234,16 +234,16 @@ You can stop the simulator now, with Ctrl+C.
 
 ## Lab 4 - Gateway host: configure and run MiNiFi
 
-MiNiFi is installed in the gateway host to read from the mosquitto broker and forward to the NiFi cluster. In this lab you will configure and run MiNiFi, but it's only in the next lab that you will provide the flow to execute.
+MiNiFi is installed in the gateway host. In this lab you will configure and run MiNiFi to read from the mosquitto broker and forward to the NiFi cluster, but it's only in the next lab that you will provide the flow to execute.
 
-Download the MQTT Processor to read from mosquitto 
+Download the NiFi MQTT Processor to read from mosquitto 
 ```
 $ cd ~
 $ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P /opt/cloudera/cem/minifi/lib
 $ chown root:root /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
 $ chmod 660 /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
 ```
-Once configured, you can start the MiNiFi agent
+You can now start the MiNiFi agent
 ```
 $ systemctl start minifi
 ```
@@ -254,9 +254,9 @@ $ cat /opt/cloudera/cem/minifi/logs/minifi-app.log
 
 ## Lab 5 - Configuring Edge Flow Management
 
-Cloudera Edge Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
+Cloudera Edge Flow Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
-Open the EFM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heartbeat messages in the **Events Monitor**.
+Open the EFM Web UI at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heartbeat messages in the **Events Monitor**.
 
 ![](./images/image14.png)
 
@@ -278,11 +278,11 @@ URL = http://hostname:8080/nifi
 ![](./images/image24.png)
 
 
-At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an _Input Port_ to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it. 
+At this point you need to connect the ConsumerMQTT processor to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an _Input Port_ to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it. 
 
 ![](./images/image4.png)
 
-To close the flow, you can temporarely add a _LogAttribute_ processor, and setup 2 connections:
+To close the NiFI flow - as it is required -, you can temporarely add a _LogAttribute_ processor, and setup 2 connections:
 - from the Input Port to LogAttribute;
 - from LogAttribute to itself.
 
@@ -290,7 +290,7 @@ Start the InputPort, but keep the LogAttribute in a stopped state.
 
 ![](./images/image26.png)
 
-Back to the Edge Management Web UI, connect the ConsumeMQTT to the RPG. The connection requires an ID and you can paste here the ID you just copied.
+Back to the Flow Designer, connect the ConsumeMQTT to the RPG. The connection requires an ID and you can paste here the ID you just copied.
 
 ![](./images/image7.png)
 
@@ -298,7 +298,7 @@ The Flow is now complete, but before publishing it, create the Bucket in the NiF
 
 ![](./images/image25.png)
 
-All required steps are now complete and you can now publish the flow for the minifi agent to pick it up automatically.
+You can now publish the flow for the minifi agent to automatically pick up.
 
 ![](./images/image21.png)
 
@@ -330,11 +330,11 @@ Connect the Input Port to the PublishKafka processor by dragging the destination
 
 ![](./images/image3.png)
 
-You can add more processors as needed to split, duplicate or re-rout your FlowFiles.
+You can add more processors as needed to process, split, duplicate or re-route your FlowFiles to all other destinations and processors.
 
 ## Lab 7 - Use Spark to call the model endpoint and save to Kudu 
 
-Spark Streaming is a processing framework for (near) real-time data. In this lab, you will use Spark to consume Kafka messages which contains the IoT data from the machine, and call the CDSW model endpoint APIs to predict whether, with those IoT values the machine sent, the machine is likely to break. Then save the results to Kudu for fast analytics.
+Spark Streaming is a processing framework for (near) real-time data. In this lab, you will use Spark to consume Kafka messages which contains the IoT data from the machine, and call the model API endpoint to predict whether, with those IoT values the machine sent, the machine is likely to break. Then save the results to Kudu for fast analytics.
 
 First, create the Kudu table. Login into Hue, and in the Impala Query, run this statement:
 
@@ -412,13 +412,22 @@ Run a few times a SQL statement to count all rows in the table to confirm the la
 ## Troubleshooting
 
 ### CEM doesn't pick up new NARs
-http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/api/agent-classes
-[{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot2","agentManifests":["agent-manifest-id"]},{"name":"iot3","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
+Delete the agent manifest manually using the EFM API:
 
-http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/api/agent-manifests?class=iot4
+Verify each class has the same agent manifest ID:
+```
+http://hostname:10080/efm/api/agent-classes
+[{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
+```
+
+Confirm the manifest doesn't have the NAR you installed
+```
+http://hostname:10080/efm/api/agent-manifests?class=iot4
 [{"identifier":"agent-manifest-id","agentType":"minifi-java","version":"1","buildInfo":{"timestamp":1556628651811,"compiler":"JDK 8"},"bundles":[{"group":"default","artifact":"system","version":"unversioned","componentManifest":{"controllerServices":[],"processors":
+```
 
-
-http://ec2-18-207-184-2.compute-1.amazonaws.com:10080/efm/swagger/ 
-"DELETE - Delete the agent manifest specified by id "
-click that button, and in the id field, enter `agent-manifest-id`
+Call the API
+```
+http://hostname:10080/efm/swagger/ 
+```
+Hit the `DELETE - Delete the agent manifest specified by id` button, and in the id field, enter `agent-manifest-id`
