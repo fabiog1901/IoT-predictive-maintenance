@@ -395,7 +395,7 @@ In this lab, you will run some SQL queries using the Impala engine. You can run 
 Login into Hue, and run the following statement in the Impala Query
 
 ```
-select sensor_id, sensor_ts from sensors where is_healthy = '0';
+select sensor_id, sensor_ts from sensors where is_healthy = 0;
 ```
 
 Run a few times a SQL statement to count all rows in the table to confirm the latest inserts are always picked up by Impala. This allows you to build real-time reports for fast action.
