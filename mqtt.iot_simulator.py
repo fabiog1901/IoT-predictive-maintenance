@@ -48,7 +48,6 @@ def main(config_path):
 
             interval_ms = misc_config.get("interval_ms", 500)
             verbose = misc_config.get("verbose", False)
-            print(type(machines))
 
             host = mqtt_config.get("host", "localhost")
             port = mqtt_config.get("port", 1883)
