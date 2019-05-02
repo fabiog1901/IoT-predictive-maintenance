@@ -289,7 +289,7 @@ Topic Name: iot
 Use Transactions: False
 ```
 
-Connect the Input Port to the PublishKafka processor by dragging the destination of the current connection from the LogAttribute to the PublishKafka. As with the LogAttribute, create a connection from the PublishKafka to itself.
+Connect the Input Port to the PublishKafka processor by dragging the destination of the current connection from the LogAttribute to the PublishKafka. As with the LogAttribute, create a connection from the PublishKafka to itself. Then you can start the Kafka processor.
 
 IMAGE
 
@@ -328,6 +328,8 @@ TBLPROPERTIES ('kudu.num_tablet_replicas' = '1');
 
 Now you can configure and run the Spark Streaming job. You need here the CDSW Access Key you saved in Lab 2.
 
+Open a second Terminal and SSH into the VM. The first is running the sensor data simulator, so you can't use it.
+
 ```
 $ cd ~
 $ ACCESS_KEY=<put here your cdsw model access key>
@@ -342,7 +344,7 @@ $ rm -rf ~/.m2 ~/.ivy2/
 $ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
 ```
 
-Spark Streaming will flood your screen with log messages, however, at a 10 seconds intervals, you should be able to spot a table: these are the messages that were consumed from Kafka and processed by Spark. YOu can configure Spark for a smaller time window, however, for this exercise 10 seconds is sufficient.
+Spark Streaming will flood your screen with log messages, however, at a 5 seconds interval, you should be able to spot a table: these are the messages that were consumed from Kafka and processed by Spark. YOu can configure Spark for a smaller time window, however, for this exercise 5 seconds is sufficient.
 
 
 ## Lab 8 - Fast analytics on fast data with Kudu and Impala
@@ -353,10 +355,9 @@ Login into Hue, and run the following statement in the Impala Query
 
 ```
 select sensor_id, sensor_ts from sensors where is_healthy = '0';
-
 ```
 
-Run it a few times to confirm the latest inserts are always picked up by Impala. This allows you to build real-time reports for fast action.
+Run a few times a SQL statement to count all rows in the table to confirm the latest inserts are always picked up by Impala. This allows you to build real-time reports for fast action.
 
 
 
