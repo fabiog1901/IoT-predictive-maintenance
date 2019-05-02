@@ -40,24 +40,21 @@ Below a screenshot with 6 tabs, one for each service:
 Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges.
 
 Navigate to the CDSW **Admin** page to fine tune the environment:
-- in the **Security** tab, add an _Engine_ with 2 vCPUs and 4 GB RAM, while deleting the default engine.
+- in the **Engines** tab, add an _Engine_ with 2 vCPUs and 4 GB RAM, while deleting the default engine.
 - add the following _Environment Variable_: 
    ```
    HADOOP_CONF_DIR = /etc/hadoop/conf/
    ```
- - Save
 
 **STEP 1** : Create the project
 
-Return to the main page to Create a New Project from Git, using this GitHub project as the source.
+Return to the main page and click on **New Project**, using this GitHub project as the source.
 
-Now that your project has been created, open the Workbench and start a Python3 Session, then run the following command to install some required libraries:
+Now that your project has been created, click on **Open Workbench** and start a Python3 Session, then run the following command to install some required libraries:
 ```
 !pip3 install --upgrade pip scikit-learn
 ```
-
 The project comes with a sample historical data. Copy this dataset into HDFS:
-
 ```
 !hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
@@ -99,12 +96,10 @@ These indicators will show up later in the **Experiments** dashboard.
 **STEP 3** : Run the experiment for the first time
 
 Now, run the experiment using the following parameters:
-
 ```
-numTrees = 40 numDepth = 20
+numTrees = 20 numDepth = 20
 ```
-
-From the menu, select `Run -> Experiments`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run.
+From the menu, select `Run -> Experiments`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. You can stop the Engine at this point.
 
 Go back to the **Projects** page in CDSW, and hit the **Experiments** button.
 
@@ -112,32 +107,36 @@ If the Status indicates ‘Running’, you have to wait till the run is complete
 
 In case your status indicates ‘Success’, you should be able to see the auroc (Area Under the Curve) model quality indicator. It might be that this value is hidden by the CDSW user interface. In that case, click on the ‘3 metrics’ links, and select the auroc field. It might be needed to de-select some other fields, since the interface can only show 3 metrics at the same time.
 
-In this example, 0.871. Not bad, but maybe there are better hyper parameter values available.
+In this example, ~0.8478. Not bad, but maybe there are better hyper parameter values available.
 
 **STEP 4** : Re-run the experiment several times
 
-Now, re-run the experiment 3 more times and try different values for NumTrees and NumDepth. Try the following values:
-
+Go back to the Workbench and run the experiment 2 more times and try different values for NumTrees and NumDepth. Try the following values:
 ```
 NumTrees NumDepth
 15       25
 25       20
 ```
-
 When all runs have completed successfully, check which parameters had the best quality (best predictive value). This is represented by the highest ‘area under the curve’, auroc metric.
 
 **STEP 5** : Save the best model to your environment
 
-Select the run number with the best predictive value. In the Overview screen of the experiment, you can see that the model in spark format, is captured in the file `iot_model.pkl`. Select this file and hit the **Add to Project** button. This will copy the model to your project directory.
+Select the run number with the best predictive value, in this case, experiment 2. In the Overview screen of the experiment, you can see that the model in spark format, is captured in the file `iot_model.pkl`. Select this file and hit the **Add to Project** button. This will copy the model to your project directory.
 
 
 ## Lab 2 - CDSW: Deploy the model
 
 **STEP 1** : Examine the program cdsw.iot_model.py
 
-Open the project you created in the previous lab, and examine the file. This PySpark program uses the pickle.load mechanism to deploy models. The model it refers to the `iot_modelf.pkl` file, was saved in the previous lab from the experiment with the best predictive model.
+Open the project you created in the previous lab, and examine the file in the Workbench. This PySpark program uses the pickle.load mechanism to deploy models. The model it refers to the `iot_modelf.pkl` file, was saved in the previous lab from the experiment with the best predictive model.
 
 There is a predict definition which is the function that calls the model, using features, and will return a result variable.
+
+Before deploying the model, try it out in the Workbench: launch a Python3 engine and run the code in file `cdsw.iot_model.py`. Then call the `predict()` method from the prompt:
+```
+predict({"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"})
+```
+The functions returns successfully, so we know we can now deploy the model. You can now stop the engine.
 
 **STEP 2 **: Deploy the model
 
@@ -168,7 +167,6 @@ Now, lets change the input parameters and call the predict function again. Put t
   "feature": "0, 95, 0, 88, 26.62, 75, 21.05, 115, 8.65, 5, 3.32, 3"
 }
 ```
-
 With these input parameters, the model returns 0, which mean that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 6.
 
 
