@@ -180,7 +180,7 @@ $ systemctl enable mosquitto
 $ systemctl start mosquitto
 ```
 
-Now clone this repo into the VM where the Python script is located and run the simulator
+Now clone this repo, then run the simulator
 
 ```
 $ cd ~
@@ -202,62 +202,45 @@ You can stop the simulator now, with Ctrl+C.
 
 MiNiFi is installed in the gateway host to read from the mosquitto broker and forward to the NiFi cluster. In this lab you will configure and run MiNiFi, but it's only in the next lab that you will provide the flow to execute.
 
-Download the NiFi Processor to read from mosquitto 
-
+Download the MQTT Processor to read from mosquitto 
 ```
-$ cd minifi
-$ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P ./lib
-$ chown root:root lib/nifi-mqtt-nar-1.8.0.nar
-$ chmod 660 lib/nifi-mqtt-nar-1.8.0.nar
+$ cd ~
+$ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P /opt/cloudera/cem/minifi/lib
+$ chown root:root /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
+$ chmod 660 /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
 ```
-
-Edit file `conf/bootstrap.conf` with your env details:
-
-```
-nifi.c2.enable=true
-nifi.c2.rest.url=http://YourHostname:10080/efm/api/c2-protocol/heartbeat
-nifi.c2.rest.url.ack=http://YourHostname:10080/efm/api/c2-protocol/acknowledge
-nifi.c2.agent.heartbeat.period=10000
-nifi.c2.agent.class=iot1
-nifi.c2.agent.identifier=agent1
-```
-
-Alternatively, you can run these commands:
-```
-TODO sed commands
-sed -i "s/YourHostname/`hostname -f`/g" conf/bootstrap.conf
-```
-
 Once configured, you can start the MiNiFi agent
 ```
-$ bin/minifi.sh start
+$ systemctl minifi start
 ```
-
 You might want to check the logs to confirm all is good:
 ```
-$ cat logs/minifi-app.log
+$ cat /opt/cloudera/cem/minifi/logs/minifi-app.log
 ```
 
-## Lab 5 - Configuring Cloudera Edge Manager
+## Lab 5 - Configuring Cloudera Edge Management
 
-Cloudera Edge Manager gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the NiFi Registry integration.
+Cloudera Edge Management gives you a visual overview of all MiNiFi agents in your environment, and allows you to update the flow configuration for each one, with versioning control thanks to the **NiFi Registry** integration. In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
 
-In this lab, you will create the MiNiFi flow and publish it for the MiNiFi agent to pick it up.
+Open the CEM Web Ui at http://public-hostname:10080/efm/ui. Ensure you see your minifi agent's heardbeat messages in the Events Monitor. You can then select the Flow Designer tab and build the flow. To build a dataflow, select the desired class from the table and click OPEN. Alternatively, you can double-click on the desired class. 
 
-
+Add a Processor to the canvas and choose the ConsumeMQTT, and configure it with below settings:
 ConsumeMQTT settings:
-
-Broker URI: tcp://10.0.0.19:1883
+```
+Broker URI: tcp://<hostname>:1883
 Client ID: minifi-iot
-Topic Filter: iot/sensors/#
+Topic Filter: iot/#
 Max Queue Size = 60
-
-
-RPG settings:
-
-URL = http://ec2-18-207-184-2.compute-1.amazonaws.com:8080/nifi
+``
+Add a Remote Process Group to the canvas and configure it as follows:
+```
+URL = http://hostname:8080/nifi
 TRANSPORT PROTOCOL = RAW
+```
 
+At this point you need to connect the MQTTConsumer to the RPG, however, you first need the ID of the NiFi entry port. Open NiFi Web UI at http://public-hostname:8080/nifi/ and add an Input Port to the convas. Call it something like "from Gateway" and copy the ID of the input port, as you will soon need it.
+
+Back to the Edge Management Web UI, connect the ConsumeMQTT to the RPG. The connection requires an ID and you can paste here the ID you just copied.
 
 ## Lab 6 - Configuring the NiFi flow and push to Kafka
 
