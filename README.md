@@ -4,29 +4,33 @@
 
 Labs summary:
 
-1. Using **CDSW**'s **Experiment** feature, train your model on the historical data.
-2. Using the **Model** feature, deploy the model into production.
-3. On the Gateway host, run a simulator to send JSON data to a **MQTT** broker.
-4. On the Gateway host, install and run **MiNiFi** to read from the MQTT broker, filter and forward to the **NiFi** cluster.
+1. On the **CDSW** cluster, train your model with the **Experiment** feature.
+2. On the **CDSW** cluster, deploy the model into production with the **Model** feature.
+3. On the Gateway host, run a simulator to send IoT sensors data to the MQTT broker.
+4. On the Gateway host, run **MiNiFi** to read from the MQTT broker, filter and forward to the **NiFi** cluster.
 5. On the NiFi cluster, prepare and send to the **Kafka** cluster.
-6. On the CDH cluster, read from the Kafka topic using **Spark Streaming**, call the **Model endpoint** and save results to **Kudu**.
-7. Using **Impala** and **Hue**, pull reports on upcoming predicted machine failures.
+6. On the CDH cluster, process each record using **Spark Streaming** by calling the **Model endpoint** and save results to **Kudu**.
+7. On the CDH cluster, pull reports on upcoming predicted machine failures using **Impala** and **Hue**.
 
 ## Lab 0 - Initial setup
 
 1. Create a CDH+CDSW cluster as per instructions [here](https://github.com/fabiog1901/OneNodeCDHCluster).
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
-3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the services are:
+3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the other services are:
   - Cloudera Manager: http://public-hostname:7180
   - Cloudera Edge Management: http://public-hostname:10080/efm/ui
   - NiFi: http://public-hostname:8080/nifi/
-  - NiFi Registry: http://public-hostname:18080/nifireg/
+  - NiFi Registry: http://public-hostname:18080/nifi-registry
   - Hue: http://public-hostname:8888
   - CDSW: http://cdsw.PUBLIC-IP.nip.io   
 
-Login into Hue. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
+Login into **Hue**. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
 Ensure you remember the username and password, as you will use these throughout this workshop.
+
+Below a screenshot with 6 tabs, one for each service:
+
+
 
 
 ## Lab 1 - CDSW: Train the model
