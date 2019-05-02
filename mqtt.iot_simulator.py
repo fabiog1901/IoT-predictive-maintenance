@@ -19,23 +19,22 @@ def generate(host, port, username, password, topic, machines, interval_ms, verbo
     interval_secs = interval_ms / 1000.0
 
     while True:
-        for m in range(1,3):
-            data = {
-                "sensor_id": m,
-                "sensor_ts": long(time.time()*1000000)
-            }
+        data = {
+            "sensor_id": random.randint(1,100),
+            "sensor_ts": long(time.time()*1000000)
+        }
 
-            for key in range(0, 11):
-                min_val, max_val = machines.get("sensor_" + str(key))
-                data["sensor_" + str(key)] = random.randint(min_val, max_val)
+        for key in range(0, 11):
+            min_val, max_val = machines.get("sensor_" + str(key))
+            data["sensor_" + str(key)] = random.randint(min_val, max_val)
 
-            payload = json.dumps(data)
+        payload = json.dumps(data)
 
-            if verbose:
-                print("%s: %s" % (topic, payload))
+        if verbose:
+            print("%s: %s" % (topic, payload))
 
-            mqttc.publish(topic, payload)
-            time.sleep(interval_secs)
+        mqttc.publish(topic, payload)
+        time.sleep(interval_secs)
 
 
 def main(config_path):
