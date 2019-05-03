@@ -24,7 +24,7 @@ def generate(host, port, username, password, topic, machines, interval_ms, verbo
             "sensor_ts": long(time.time()*1000000)
         }
 
-        for key in range(0, 11):
+        for key in range(0, 12):
             min_val, max_val = machines.get("sensor_" + str(key))
             data["sensor_" + str(key)] = random.randint(min_val, max_val)
 
