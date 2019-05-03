@@ -43,8 +43,8 @@ Open CDSW Web UI and click on *sign up for a new account*. As you're the first u
 ![](./images/image2.png)
 
 Navigate to the CDSW **Admin** page to fine tune the environment:
-- in the **Engines** tab, add an _Engine_ with 2 vCPUs and 4 GB RAM, while deleting the default engine.
-- add the following _Environment Variable_: 
+- in the **Engines** tab, add in _Engines Profiles_ a new engine (docker image) with 2 vCPUs and 4 GB RAM, while deleting the default engine.
+- add the following in _Environmental Variables_: 
    ```
    HADOOP_CONF_DIR = /etc/hadoop/conf/
    ```
