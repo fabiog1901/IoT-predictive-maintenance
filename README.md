@@ -54,7 +54,8 @@ Navigate to the CDSW **Admin** page to fine tune the environment:
 
 **STEP 1** : Create the project
 
-Return to the main page and click on **New Project**, using this GitHub project as the source.
+Return to the main page and click on **New Project**, using this GitHub project as the source: `https://github.com/fabiog1901/IoT-predictive-maintenance`.
+
 
 ![](./images/image8.png)
 
