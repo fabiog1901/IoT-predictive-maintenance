@@ -173,14 +173,14 @@ The functions returns successfully, so we know we can now deploy the model. You 
 From the projects page of your project, select the **Models** button. Select **New Model** and populate specify the following configuration:
 
 ```
-Name:	         "IoT Prediction Model"
-Description:	 "IoT Prediction Model"
-File:		       cdsw.iot_model.py
-Function:	     predict	
+Name:          IoT Prediction Model
+Description:   IoT Prediction Model
+File:          cdsw.iot_model.py
+Function:      predict
 Example Input: {"feature": "0, 65, 0, 137, 21.95, 83, 19.42, 111, 9.4, 6, 3.43, 4"}
-Kernel:		     Python 3
-Engine:	       2 vCPU / 4 GB Memory
-Replicas:	     1
+Kernel:        Python 3
+Engine:        2 vCPU / 4 GB Memory
+Replicas:      1
 ```
 
 ![](./images/image6.png)
