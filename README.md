@@ -76,6 +76,8 @@ The project comes with an historical dataset. Copy this dataset into HDFS:
 
 You're now ready to run the Experiment to train the model on your historical data.
 
+You can stop the Engine at this point.
+
 **STEP 2** : Examine `cdsw.iot_exp.py`
 
 Open the file `cdsw.iot_exp.py`. This is a python program that builds a model to predict machine failure (the likelihood that this machine is going to fail). There is a dataset available on hdfs with customer data, including a failure indicator field.
@@ -114,7 +116,7 @@ Now, run the experiment using the following parameters:
 ```
 numTrees = 20 numDepth = 20
 ```
-From the menu, select `Run -> Experiments`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. You can stop the Engine at this point.
+From the menu, select `Run -> Experiments`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. 
 
 ![](./images/image23.png)
 
