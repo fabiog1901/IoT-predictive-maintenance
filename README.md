@@ -116,7 +116,7 @@ Now, run the experiment using the following parameters:
 ```
 numTrees = 20 numDepth = 20
 ```
-From the menu, select `Run -> Experiments`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. 
+From the menu, select `Run -> Run Experiments...`. Now, in the background, the Data Science Workbench environment will spin up a new docker container, where this program will run. 
 
 ![](./images/image23.png)
 
