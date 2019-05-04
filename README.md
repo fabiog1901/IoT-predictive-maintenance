@@ -14,8 +14,9 @@ Labs summary:
 
 ## Lab 0 - Initial setup
 
-1. Create a CDH+CDSW cluster as per instructions [here](https://github.com/fabiog1901/OneNodeCDHCluster). 
-**PLEASE NOTE** : due to a bug, comment out line `systemctl start minifi` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L166)
+1. Create a CDH+CDSW cluster as per [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster). 
+
+**PLEASE NOTE** : due to a bug, comment out line `systemctl start minifi` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L166).
 
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
 3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the other services are:
