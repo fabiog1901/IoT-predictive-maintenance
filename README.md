@@ -417,6 +417,7 @@ Run a few times a SQL statement to count all rows in the table to confirm the la
   <summary>Resources</summary>
   
   [Original Blogpost by Abdelkrim Hadjidj](https://medium.freecodecamp.org/building-an-iiot-system-using-apache-nifi-mqtt-and-raspberry-pi-ce1d6ed565bc)
+  
   [Cloudera Documentation](https://www.cloudera.com/documentation.html)
 </details>
 
