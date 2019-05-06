@@ -2,6 +2,10 @@
 
 ## Intro
 
+In this workshop, you will build a full OT to IT workflow. 
+
+![](./images/iot_diagram.png)
+
 Labs summary:
 
 1. On the **CDSW** cluster, train your model with the **Experiment** feature.
