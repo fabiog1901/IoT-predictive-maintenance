@@ -18,9 +18,7 @@ Labs summary:
 
 ## Lab 0 - Initial setup
 
-1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster). 
-
-**PLEASE NOTE** : due to a minor MiNiFi bug, comment out line `systemctl start minifi` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L166), before running `setup.sh`. 
+1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster) and **PLEASE NOTE** that due to a minor MiNiFi bug, you must comment out line `systemctl start minifi` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L166), before running `setup.sh`. 
 
 You will be prompted to explicitly start MiNiFi in Lab 5.
 
