@@ -282,7 +282,7 @@ Max Queue Size = 60
 
 Add a _Remote Process Group_ to the canvas and configure it as follows:
 ```
-URL = http://hostname:8080/nifi
+URL = http://<hostname>:8080/nifi
 ```
 ![](./images/image24.png)
 
@@ -379,7 +379,7 @@ Now you can configure and run the Spark Streaming job. You need here the CDSW Ac
 Open a second Terminal and SSH into the VM. The first is running the sensor data simulator, so you can't use it.
 
 ```
-$ cd ~
+$ sudo su -
 $ ACCESS_KEY=<put here your cdsw model access key>
 $ PUBLIC_IP=`curl https://api.ipify.org/`
 $ mv ~/IoT-predictive-maintenance/spark.iot.py ~
