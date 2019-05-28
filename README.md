@@ -22,7 +22,7 @@ Labs summary:
 Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this stop.
 
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
-3. Login into Cloudera Manager, and familiarize youself with the services installed. The URLs to access the other services are:
+3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize youself with the services installed. The URLs to access the other services are:
   - Cloudera Manager: http://public-hostname:7180
   - Cloudera Edge Flow Management: http://public-hostname:10080/efm/ui
   - NiFi: http://public-hostname:8080/nifi/
