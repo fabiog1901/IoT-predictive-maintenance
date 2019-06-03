@@ -19,16 +19,16 @@ Labs summary:
 ## Lab 0 - Initial setup
 
 1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster) and **PLEASE NOTE** that due to a minor MiNiFi bug, you must comment out line `service minifi start` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L236), before running `setup.sh`. You will be prompted to explicitly start MiNiFi in Lab 5. 
-Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this stop.
+Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
 
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
-3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize youself with the services installed. The URLs to access the other services are:
-  - Cloudera Manager: http://public-hostname:7180
-  - Cloudera Edge Flow Management: http://public-hostname:10080/efm/ui
-  - NiFi: http://public-hostname:8080/nifi/
-  - NiFi Registry: http://public-hostname:18080/nifi-registry
-  - Hue: http://public-hostname:8888
-  - CDSW: http://cdsw.PUBLIC-IP.nip.io   
+3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize youself with the services installed. The Ports to access the other services are:
+  - Cloudera Manager:  7180
+  - Edge Flow Manager: 10080/efm/ui
+  - NiFi:              8080/nifi/
+  - NiFi Registry:     18080/nifi-registry
+  - Hue:               8888
+  - CDSW:              http://cdsw.<vm-public-IP>.nip.io   
 
 Login into **Hue**. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
