@@ -28,7 +28,7 @@ Check the Troubleshooting at the end of this document for how to reset MiNiFi in
   - NiFi:              8080/nifi/
   - NiFi Registry:     18080/nifi-registry
   - Hue:               8888
-  - CDSW:              http://cdsw.<vm-public-IP>.nip.io   
+  - CDSW:              http://cdsw.\<vm-public-IP\>.nip.io   
 
 Login into **Hue**. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
