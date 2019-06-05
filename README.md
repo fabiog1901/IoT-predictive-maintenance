@@ -392,6 +392,8 @@ $ rm -rf ~/.m2 ~/.ivy2/
 $ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
 ```
 
+Please note: you might have to use `spark2-submit` if you're running this demo out of a CDH 5 cluster.
+
 Spark Streaming will flood your screen with log messages, however, at a 5 seconds interval, you should be able to spot a table: these are the messages that were consumed from Kafka and processed by Spark. YOu can configure Spark for a smaller time window, however, for this exercise 5 seconds is sufficient.
 
 ![](./images/image20.png)
