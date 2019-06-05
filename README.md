@@ -57,6 +57,7 @@ Navigate to the CDSW **Admin** page to fine tune the environment:
 
 ![](./images/image16.png)
 
+Please note: this env variable is not required for a CDH 5 cluster.
 
 **STEP 1** : Create the project
 
