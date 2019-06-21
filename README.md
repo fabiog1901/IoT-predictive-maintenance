@@ -4,7 +4,7 @@
 
 In this workshop, you will build a full OT to IT workflow. 
 
-![](./images/iot_diagram_1.png)
+![](./images/iot.jpg)
 
 Labs summary:
 
