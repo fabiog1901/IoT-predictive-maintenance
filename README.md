@@ -4,7 +4,7 @@
 
 In this workshop, you will build a full OT to IT workflow. Below is the architecture diagram, showing all the components you will setup over the next 8 lab exercises. While the diagram divides the components according to their location (factory, regional or datacenter level) in this workshop all such components will reside in one single host.
 
-![](./images/iot-1.jpg)
+![](./images/iot.jpg)
 
 Labs summary:
 
