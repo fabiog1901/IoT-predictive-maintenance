@@ -75,7 +75,7 @@ Once the Engine is ready, run the following command to install some required lib
 ```
 !pip3 install --upgrade pip scikit-learn
 ```
-The project comes with an historical dataset. Copy this dataset into HDFS:
+The project comes with a historical dataset. Copy this dataset into HDFS:
 ```
 !hdfs dfs -put data/historical_iot.txt /user/$HADOOP_USER_NAME
 ```
