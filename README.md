@@ -2,12 +2,13 @@
 
 ## Intro
 
-In this workshop, you will build a full OT to IT workflow. 
+In this workshop, you will build a full OT to IT workflow. Below is the architecture diagram, showing all components you will setup over the next 8 lab excercises. While the diagram divides the components according to their location (factory, regional or datacenter level) in this workshop all such components will reside in one single host.
 
 ![](./images/iot.jpg)
 
 Labs summary:
 
+0. Setup the sandbox environment.
 1. On the **CDSW** cluster, train your model with the **Experiment** feature.
 2. On the **CDSW** cluster, deploy the model into production with the **Model** feature.
 3. On the Gateway host, run a simulator to send IoT sensors data to the MQTT broker.
@@ -28,7 +29,7 @@ Check the Troubleshooting at the end of this document for how to reset MiNiFi in
   - NiFi:              8080/nifi/
   - NiFi Registry:     18080/nifi-registry
   - Hue:               8888
-  - CDSW:              http://cdsw.<vm-public-IP\>.nip.io   
+  - CDSW:              cdsw.<vm-public-IP\>.nip.io   
 
 Login into **Hue**. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
