@@ -23,7 +23,7 @@ Labs summary:
 Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
 
 2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
-3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize youself with the services installed. The Ports to access the other services are:
+3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize yourself with the services installed. The Ports to access the other services are:
   - Cloudera Manager:  7180
   - Edge Flow Manager: 10080/efm/ui
   - NiFi:              8080/nifi/
@@ -197,9 +197,9 @@ If all parameters are set, you can hit the **Deploy Model** button. Wait till th
 
 **STEP 3** : Test the deployed model
 
-After the several minutes, your model should get to the **Deployed** state. Now, click on the Model Name link, to go to the Model Overview page. From the that page, hit the **Test** button to check if the model is working.
+After several minutes, your model should get to the **Deployed** state. Now, click on the Model Name link, to go to the Model Overview page. From the that page, hit the **Test** button to check if the model is working.
 
-The green color with success is telling that our REST call to the model is technically working. And if you examine the response: `{“result”: 1}`, it returns a 1, which mean that machine with these features is likely to stay healthy.
+The green color with success is telling that our REST call to the model is technically working. And if you examine the response: `{"result": 1}`, it returns a 1, which mean that machine with these features is likely to stay healthy.
 
 ![](./images/image11.png)
 
@@ -209,7 +209,7 @@ Now, lets change the input parameters and call the predict function again. Put t
   "feature": "0, 95, 0, 88, 26.62, 75, 21.05, 115, 8.65, 5, 3.32, 3"
 }
 ```
-With these input parameters, the model returns 0, which mean that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 6.
+With these input parameters, the model returns 0, which means that the machine is likely to break. Take a note of the **AccessKey** as you will need this for lab 6.
 
 
 ## Lab 3 - Gateway host: setup machine sensors simulator and MQTT broker
