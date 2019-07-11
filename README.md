@@ -17,14 +17,13 @@ Labs summary:
 6. On the CDH cluster, process each record using **Spark Streaming**, calling the **Model endpoint** and save results to **Kudu**.
 7. On the CDH cluster, pull reports on upcoming predicted machine failures using **Impala** and **Hue**.
 
-## Lab 0 - Initial setup
-
 ### Pre-requisites
 
 - Laptop with a supported OS (Windows 7 not supported).
 - Ability to SSH into remote hosts from Windows or Mac. For Windows machines, install Putty or even better [install OpenSSH for PowerShell](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse).
 - A modern browser like Google Chrome (IE not supported).
 
+## Lab 0 - Initial setup
 
 1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster) and **PLEASE NOTE** that due to a minor MiNiFi bug, you must comment out line `service minifi start` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L236), before running `setup.sh`. You will be prompted to explicitly start MiNiFi in Lab 5. 
 Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
