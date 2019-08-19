@@ -25,10 +25,11 @@ Labs summary:
 
 ## Lab 0 - Initial setup
 
-1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster) and **PLEASE NOTE** that due to a minor MiNiFi bug, you must comment out line `service minifi start` in `setup.sh`, [here](https://github.com/fabiog1901/OneNodeCDHCluster/blob/master/setup.sh#L236), before running `setup.sh`. You will be prompted to explicitly start MiNiFi in Lab 5. 
-Check the Troubleshooting at the end of this document for how to reset MiNiFi in case you forgot to do this step.
+1. Create a CDH+CDSW cluster following [these instructions](https://github.com/fabiog1901/OneNodeCDHCluster) and **PLEASE NOTE** that due to a minor MiNiFi bug, you must comment out line `service minifi start` in `setup.sh`before running `setup.sh`. You will be prompted to explicitly start MiNiFi in Lab 5. 
+Check the **Troubleshooting** at the end of this document for how to reset MiNiFi in case you forgot to do this step.
 
-2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons.
+2. Ensure you can SSH into the cluster, and that traffic from the cluster is only allowed from your own IP/VPN for security reasons. Ports used by this workshop are 7180, 80, 8080, 18080, 10080, 8888, 50999.
+
 3. Login into Cloudera Manager with username/password `admin/admin`, and familiarize yourself with the services installed. The Ports to access the other services are:
   - Cloudera Manager:  7180
   - Edge Flow Manager: 10080/efm/ui
@@ -39,7 +40,7 @@ Check the Troubleshooting at the end of this document for how to reset MiNiFi in
 
 Login into **Hue**. As you are the first user to login into Hue, you are granted admin privileges. At this point, you won't need to do anything on Hue, but by logging in, CDH has created your HDFS user and folder, which you will need for the next lab. 
 
-Ensure you remember the username and password, as you will use these throughout this workshop.
+Ensure you remember the username and password, as you will use these throughout this workshop. 
 
 Below a screenshot of Chrome open with 6 tabs, one for each service.
 
@@ -51,7 +52,7 @@ In this and the following lab, you will wear the hat of a Data Scientist. You wi
 
 **STEP 0** : Configure CDSW
 
-Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges.
+Open CDSW Web UI and click on *sign up for a new account*. As you're the first user to login into CDSW, you are granted admin privileges. Make sure you use the same username you used when you logged into HUE, in Lab 0. The usernames here must match.
 
 ![](./images/image2.png)
 
