@@ -433,24 +433,24 @@ Run a few times a SQL statement to count all rows in the table to confirm the la
 ## Troubleshooting
 <details>
     <summary>CEM doesn't pick up new NARs</summary>
+  1. Stop Minifi.
+  2. Delete the agent manifest manually using the EFM API:
+     Verify each class has the same agent manifest ID:
+    ```
+    http://hostname:10080/efm/api/agent-classes
+    [{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
+    ```
 
-  Delete the agent manifest manually using the EFM API:
+    Confirm the manifest doesn't have the NAR you installed
+    ```
+    http://hostname:10080/efm/api/agent-manifests?class=iot4
+    [{"identifier":"agent-manifest-id","agentType":"minifi-java","version":"1","buildInfo":{"timestamp":1556628651811,"compiler":"JDK 8"},"bundles":[{"group":"default","artifact":"system","version":"unversioned","componentManifest":{"controllerServices":[],"processors":
+    ```
 
-  Verify each class has the same agent manifest ID:
-  ```
-  http://hostname:10080/efm/api/agent-classes
-  [{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
-  ```
-
-  Confirm the manifest doesn't have the NAR you installed
-  ```
-  http://hostname:10080/efm/api/agent-manifests?class=iot4
-  [{"identifier":"agent-manifest-id","agentType":"minifi-java","version":"1","buildInfo":{"timestamp":1556628651811,"compiler":"JDK 8"},"bundles":[{"group":"default","artifact":"system","version":"unversioned","componentManifest":{"controllerServices":[],"processors":
-  ```
-
-  Call the API
-  ```
-  http://hostname:10080/efm/swagger/ 
-  ```
-  Hit the `DELETE - Delete the agent manifest specified by id` button, and in the id field, enter `agent-manifest-id`
+    Call the API
+    ```
+    http://hostname:10080/efm/swagger/ 
+    ```
+    Hit the `DELETE - Delete the agent manifest specified by id` button, and in the id field, enter `agent-manifest-id`
+ 3. Restart Minifi
 </details>
