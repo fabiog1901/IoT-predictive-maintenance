@@ -431,11 +431,11 @@ Run a few times a SQL statement to count all rows in the table to confirm the la
 </details>
 
 ## Troubleshooting
-<details>
-    <summary>CEM doesn't pick up new NARs</summary>
-  1. Stop Minifi.
-  2. Delete the agent manifest manually using the EFM API:
-     Verify each class has the same agent manifest ID:
+
+### CEM doesn't pick up new NARs</summary>
+1. Stop Minifi.
+2. Delete the agent manifest manually using the EFM API:
+    Verify each class has the same agent manifest ID:
     ```
     http://hostname:10080/efm/api/agent-classes
     [{"name":"iot1","agentManifests":["agent-manifest-id"]},{"name":"iot4","agentManifests":["agent-manifest-id"]}]
@@ -452,5 +452,4 @@ Run a few times a SQL statement to count all rows in the table to confirm the la
     http://hostname:10080/efm/swagger/ 
     ```
     Hit the `DELETE - Delete the agent manifest specified by id` button, and in the id field, enter `agent-manifest-id`
- 3. Restart Minifi
-</details>
+3. Restart Minifi
