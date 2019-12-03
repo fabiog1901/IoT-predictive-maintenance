@@ -225,18 +225,18 @@ In this lab you will run a simple Python script that simulates IoT sensor data f
 
 SSH into the VM, then install required libs and start the mosquitto broker
 ```
-$ sudo su -
-$ yum install -y mosquitto
-$ pip install paho-mqtt
-$ systemctl enable mosquitto
-$ systemctl start mosquitto
+sudo su -
+yum install -y mosquitto
+pip install paho-mqtt
+systemctl enable mosquitto
+systemctl start mosquitto
 ```
 
 Now clone this repo, then run the simulator to send sensor data to mosquitto.
 ```
-$ git clone https://github.com/fabiog1901/IoT-predictive-maintenance.git
-$ mv IoT-predictive-maintenance/mqtt.* ~
-$ python mqtt.iot_simulator.py mqtt.iot.config
+git clone https://github.com/fabiog1901/IoT-predictive-maintenance.git
+mv IoT-predictive-maintenance/mqtt.* ~
+python mqtt.iot_simulator.py mqtt.iot.config
 ```
 
 You should see an output similar to the below:
@@ -256,18 +256,18 @@ MiNiFi is installed in the gateway host. In this lab you will configure and run 
 
 Download the NiFi MQTT Processor to read from mosquitto 
 ```
-$ cd ~
-$ wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P /opt/cloudera/cem/minifi/lib
-$ chown root:root /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
-$ chmod 660 /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
+cd ~
+wget http://central.maven.org/maven2/org/apache/nifi/nifi-mqtt-nar/1.8.0/nifi-mqtt-nar-1.8.0.nar -P /opt/cloudera/cem/minifi/lib
+chown root:root /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
+chmod 660 /opt/cloudera/cem/minifi/lib/nifi-mqtt-nar-1.8.0.nar
 ```
 You can now start the MiNiFi agent
 ```
-$ systemctl start minifi
+service minifi start
 ```
 You might want to check the logs to confirm all is good:
 ```
-$ cat /opt/cloudera/cem/minifi/logs/minifi-app.log
+cat /opt/cloudera/cem/minifi/logs/minifi-app.log
 ```
 
 ## Lab 5 - Configuring Edge Flow Management
@@ -388,17 +388,17 @@ Now you can configure and run the Spark Streaming job. You need here the CDSW Ac
 Open a second Terminal and SSH into the VM. The first is running the sensor data simulator, so you can't use it.
 
 ```
-$ sudo su -
-$ ACCESS_KEY=<put here your cdsw model access key>
-$ PUBLIC_IP=`curl https://api.ipify.org/`
-$ mv ~/IoT-predictive-maintenance/spark.iot.py ~
-$ sed -i "s/YourHostname/`hostname -f`/" spark.iot.py
-$ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark.iot.py
-$ sed -i "s/YourAccessKey/$ACCESS_KEY/" spark.iot.py
-$ wget  http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.9.0/kudu-spark2_2.11-1.9.0.jar
-$ wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master/lib/spark-core_2.11-1.5.2.logging.jar
-$ rm -rf ~/.m2 ~/.ivy2/
-$ spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
+sudo su -
+ACCESS_KEY=<put here your cdsw model access key>
+PUBLIC_IP=`curl https://api.ipify.org/`
+mv ~/IoT-predictive-maintenance/spark.iot.py ~
+sed -i "s/YourHostname/`hostname -f`/" spark.iot.py
+sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark.iot.py
+sed -i "s/YourAccessKey/$ACCESS_KEY/" spark.iot.py
+wget  http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.9.0/kudu-spark2_2.11-1.9.0.jar
+wget https://raw.githubusercontent.com/swordsmanliu/SparkStreamingHbase/master/lib/spark-core_2.11-1.5.2.logging.jar
+rm -rf ~/.m2 ~/.ivy2/
+spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka_2.11:1.6.3 spark.iot.py
 ```
 
 Please note: you might have to use `spark2-submit` if you're running this demo out of a CDH 5 cluster.
