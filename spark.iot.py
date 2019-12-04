@@ -8,7 +8,7 @@ from pyspark.sql import SQLContext
 from uuid import uuid1
 from pyspark.sql.types import *
 
-zk_broker = "YourHostname:2181"
+kafka_brokers = "YourHostname:9092"
 kafka_topic = "iot"
 kudu_master = "YourHostname"
 kudu_table = "impala::default.sensors"
@@ -61,7 +61,7 @@ def insert_into_kudu(time,rdd):
 if __name__ == "__main__":
     sc = SparkContext(appName="SparkStreaming_IoT")
     ssc = StreamingContext(sc, 5) # 5 second window
-    kvs = KafkaUtils.createStream(ssc, zk_broker, "iot", {kafka_topic:1})
+    kvs = KafkaUtils.createDirectStream(ssc, [kafka_topic], {"metadata.broker.list": kafka_brokers })
 
     # parse the kafka message into a tuple
     kafka_stream = kvs.map(lambda x: x[1]) \
