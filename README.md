@@ -397,7 +397,7 @@ sed -i "s/YourCDSWDomain/cdsw.$PUBLIC_IP.nip.io/" spark.iot.py
 sed -i "s/YourAccessKey/$ACCESS_KEY/" spark.iot.py
 wget  http://central.maven.org/maven2/org/apache/kudu/kudu-spark2_2.11/1.9.0/kudu-spark2_2.11-1.9.0.jar
 rm -rf ~/.m2 ~/.ivy2/
-spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar,spark-core_2.11-1.5.2.logging.jar --packages org.apache.spark:spark-streaming-kafka-0-8-assembly_2.11:2.4.0 spark.iot.py
+spark-submit --master local[2] --jars kudu-spark2_2.11-1.9.0.jar --packages org.apache.spark:spark-streaming-kafka-0-8-assembly_2.11:2.4.0 spark.iot.py
 ```
 
 Please note: you might have to use `spark2-submit` if you're running this demo out of a CDH 5 cluster.
